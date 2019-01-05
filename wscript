@@ -40,14 +40,12 @@ def configure(conf):
     autowaf.set_c_lang(conf, 'c99')
 
     autowaf.check_pkg(conf, 'lv2', atleast_version='1.14.0', uselib_store='LV2')
-    autowaf.check_pkg(conf, 'lilv-0', uselib_store='LILV',
-                      atleast_version='0.24.0', mandatory=True)
-    autowaf.check_pkg(conf, 'serd-0', uselib_store='SERD',
-                      atleast_version='0.14.0', mandatory=True)
-    autowaf.check_pkg(conf, 'sord-0', uselib_store='SORD',
-                      atleast_version='0.12.0', mandatory=True)
-    autowaf.check_pkg(conf, 'sratom-0', uselib_store='SRATOM',
-                      atleast_version='0.6.0', mandatory=True)
+    autowaf.check_pkg(conf, 'lilv-1', uselib_store='LILV',
+                      atleast_version='1.0.0', mandatory=True)
+    autowaf.check_pkg(conf, 'serd-1', uselib_store='SERD',
+                      atleast_version='1.0.0', mandatory=True)
+    autowaf.check_pkg(conf, 'sratom-1', uselib_store='SRATOM',
+                      atleast_version='1.0.0', mandatory=True)
     if Options.options.portaudio:
         autowaf.check_pkg(conf, 'portaudio-2.0', uselib_store='PORTAUDIO',
                           atleast_version='2.0.0', mandatory=False)
