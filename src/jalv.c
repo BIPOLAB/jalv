@@ -488,7 +488,7 @@ jalv_ui_write(void* const    jalv_handle,
 	if (jalv->opts.dump && protocol == jalv->urids.atom_eventTransfer) {
 		const LV2_Atom* atom = (const LV2_Atom*)buffer;
 		char*           str  = sratom_to_turtle(
-			jalv->sratom, jalv->env, &jalv->unmap, "jalv:", NULL, NULL,
+			jalv->sratom, SRATOM_ANON_SUBJECT, jalv->env, &jalv->unmap, NULL, NULL,
 			atom->type, atom->size, LV2_ATOM_BODY_CONST(atom));
 		jalv_ansi_start(stdout, 36);
 		printf("\n## UI => Plugin (%u bytes) ##\n%s\n", atom->size, str);
@@ -663,9 +663,15 @@ jalv_update(Jalv* jalv)
 		if (jalv->opts.dump && ev.protocol == jalv->urids.atom_eventTransfer) {
 			/* Dump event in Turtle to the console */
 			LV2_Atom* atom = (LV2_Atom*)buf;
-			char*     str  = sratom_to_turtle(
-				jalv->ui_sratom, jalv->env, &jalv->unmap, "jalv:", NULL, NULL,
-				atom->type, atom->size, LV2_ATOM_BODY(atom));
+			char*     str  = sratom_to_turtle(jalv->ui_sratom,
+			                                  SRATOM_ANON_SUBJECT,
+			                                  jalv->env,
+			                                  &jalv->unmap,
+			                                  NULL,
+			                                  NULL,
+			                                  atom->type,
+			                                  atom->size,
+			                                  LV2_ATOM_BODY(atom));
 			jalv_ansi_start(stdout, 35);
 			printf("\n## Plugin => UI (%u bytes) ##\n%s\n", atom->size, str);
 			jalv_ansi_reset(stdout);
