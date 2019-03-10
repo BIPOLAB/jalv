@@ -487,13 +487,12 @@ jalv_ui_write(void* const    jalv_handle,
 
 	if (jalv->opts.dump && protocol == jalv->urids.atom_eventTransfer) {
 		const LV2_Atom* atom = (const LV2_Atom*)buffer;
-		char*           str  = sratom_to_turtle(
-			jalv->sratom, SRATOM_ANON_SUBJECT, jalv->env, &jalv->unmap, NULL, NULL,
-			atom->type, atom->size, LV2_ATOM_BODY_CONST(atom));
+		char*           str  = sratom_to_string(
+			jalv->sratom, jalv->env, atom, SRATOM_PRETTY_NUMBERS);
 		jalv_ansi_start(stdout, 36);
 		printf("\n## UI => Plugin (%u bytes) ##\n%s\n", atom->size, str);
 		jalv_ansi_reset(stdout);
-		free(str);
+		sratom_free(str);
 	}
 
 	char buf[sizeof(ControlChange) + buffer_size];
@@ -663,15 +662,8 @@ jalv_update(Jalv* jalv)
 		if (jalv->opts.dump && ev.protocol == jalv->urids.atom_eventTransfer) {
 			/* Dump event in Turtle to the console */
 			LV2_Atom* atom = (LV2_Atom*)buf;
-			char*     str  = sratom_to_turtle(jalv->ui_sratom,
-			                                  SRATOM_ANON_SUBJECT,
-			                                  jalv->env,
-			                                  &jalv->unmap,
-			                                  NULL,
-			                                  NULL,
-			                                  atom->type,
-			                                  atom->size,
-			                                  LV2_ATOM_BODY(atom));
+			char*     str  = sratom_to_string(
+				jalv->ui_sratom, jalv->env, atom, SRATOM_PRETTY_NUMBERS);
 			jalv_ansi_start(stdout, 35);
 			printf("\n## Plugin => UI (%u bytes) ##\n%s\n", atom->size, str);
 			jalv_ansi_reset(stdout);
@@ -791,8 +783,8 @@ jalv_open(Jalv* const jalv, int argc, char** argv)
 	serd_env_set_prefix_from_strings(jalv->env, "atom", LV2_ATOM_PREFIX);
 
 	SerdWorld* serd_world = serd_world_new(); // FIXME
-	jalv->sratom    = sratom_new(serd_world, &jalv->map);
-	jalv->ui_sratom = sratom_new(serd_world, &jalv->map);
+	jalv->sratom    = sratom_streamer_new(serd_world, &jalv->map, &jalv->unmap);
+	jalv->ui_sratom = sratom_streamer_new(serd_world, &jalv->map, &jalv->unmap);
 
 	jalv->urids.atom_Float           = symap_map(jalv->symap, LV2_ATOM__Float);
 	jalv->urids.atom_Int             = symap_map(jalv->symap, LV2_ATOM__Int);
